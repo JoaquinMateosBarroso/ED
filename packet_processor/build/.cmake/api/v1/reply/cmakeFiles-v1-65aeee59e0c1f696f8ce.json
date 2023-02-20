@@ -733,8 +733,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/home/joaquin/Documentos/Asignaturas/ED/p1/packet_processor/build",
-		"source" : "/home/joaquin/Documentos/Asignaturas/ED/p1/packet_processor"
+		"build" : "/home/joaquin/Documentos/Asignaturas/ED/packet_processor/build",
+		"source" : "/home/joaquin/Documentos/Asignaturas/ED/packet_processor"
 	},
 	"version" : 
 	{

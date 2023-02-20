@@ -99,7 +99,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/joaquin/Qt/Tools/CMake/bin/cmake --regenerate-during-build -S/home/joaquin/Documentos/Asignaturas/ED/p1/packet_processor -B/home/joaquin/Documentos/Asignaturas/ED/p1/packet_processor/build
+  command = /home/joaquin/Qt/Tools/CMake/bin/cmake --regenerate-during-build -S/home/joaquin/Documentos/Asignaturas/ED/packet_processor -B/home/joaquin/Documentos/Asignaturas/ED/packet_processor/build
   description = Re-running CMake...
   generator = 1
 

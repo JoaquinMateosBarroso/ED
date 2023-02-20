@@ -1,4 +1,4 @@
-# Install script for directory: /home/joaquin/Documentos/Asignaturas/ED/p1/packet_processor
+# Install script for directory: /home/joaquin/Documentos/Asignaturas/ED/packet_processor
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/joaquin/Documentos/Asignaturas/ED/p1/packet_processor/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/joaquin/Documentos/Asignaturas/ED/packet_processor/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
