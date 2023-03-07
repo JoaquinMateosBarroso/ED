@@ -281,12 +281,15 @@ protected:
    */
   typename SNode<T>::Ref head() const;
 
-  //TODO
+  //
   //Give a representation using a simple linked list of nodes.
   //We want a size() operation with O(1).
+  typename SNode<T>::Ref _head;
+  typename SNode<T>::Ref _current;
 
+  size_t _size;
   //
 };
 
 
-#include "slist_imp.hpp"
+    #include "slist_imp.hpp"

@@ -8,7 +8,6 @@
  */
 #pragma once
 
-
 #include <sstream>
 #include <stdexcept>
 #include <cassert>
@@ -100,9 +99,10 @@ void SNode<T>::set_next(SNode<T>::Ref n)
 template<class T>
 SList<T>::SList ()
 {
-    //TODO
-
-
+    //
+    _head = nullptr;
+    _current = nullptr;
+    _size = 0;
 
     //
     assert(is_empty());
@@ -113,8 +113,6 @@ SList<T>::~SList()
 {
     //TODO
 
-
-
     //
 
 }
@@ -123,8 +121,8 @@ template<class T>
 typename SNode<T>::Ref SList<T>::head() const
 {
     typename SNode<T>::Ref h;
-    //TODO
-
+    //
+    h = _head;
     //
     return h;
 }
@@ -142,13 +140,45 @@ typename SList<T>::Ref SList<T>::create(std::istream& in) noexcept(false)
     std::string token;
     in >> token;
 
-    //TODO
+    //
     //Hint: use std::istringstream to convert from "string" to template
     // parameter T type.
     // Throw std::runtime_error("Wrong input format.") exception when an input
     // format error was found.
 
-
+    T aux_t;
+    if (token == "[]")
+    {
+        return list;
+    }
+    if (token != "[")
+    {
+        throw std::runtime_error("Wrong input format.");
+    }
+    in >> token;
+    while (token != "]")
+    {
+        if (token == "]")
+        {
+            if (!list->is_empty())
+            {
+                list->goto_first();
+            }
+            return list;
+        }
+        std::istringstream aux(token);
+        aux >> aux_t;
+        if (in.fail() or aux.fail())
+        {
+            throw std::runtime_error("Wrong input format.");
+        }
+        list->insert(aux_t);
+        while (list->has_next())
+        {
+            list->goto_next();
+        }
+        in >> token;
+    }
 
     //
     return list;
@@ -158,8 +188,8 @@ template<class T>
 bool SList<T>::is_empty () const
 {
     bool ret_val = true;
-    //TODO
-
+    //
+    ret_val = (_head == nullptr) and (_size == 0);
     //
     return ret_val;
 }
@@ -168,8 +198,8 @@ template<class T>
 size_t SList<T>::size () const
 {
     size_t ret_val = 0;
-    //TODO
-
+    //
+    ret_val = _size;
     //
     return ret_val;
 }
@@ -179,8 +209,8 @@ T SList<T>::front() const
 {
     assert(!is_empty());
     T f;
-    //TODO
-
+    //
+    return _head -> item();
     //
     return f;
 }
@@ -190,8 +220,8 @@ T SList<T>::current() const
 {    
     assert(! is_empty());
     T c;
-    //TODO
-
+    //
+    c = _current -> item();
     //
     return c;
 }
@@ -201,8 +231,8 @@ bool SList<T>::has_next() const
 {
     assert(!is_empty());
     bool ret_val = false;
-    //TODO
-
+    //
+    ret_val = (_current->next() != nullptr);
     //
     return ret_val;
 }
@@ -212,8 +242,8 @@ T SList<T>::next() const
 {
     assert(has_next());
     T ret_val = false;
-    //TODO
-
+    //
+    ret_val = _current -> next() -> item();
     //
     return ret_val;
 }
@@ -223,11 +253,16 @@ template<class T>
 bool SList<T>::has(T const& it) const
 {
     bool found = false;
-    //TODO
+    //
     //Hint: you can reuse SList::find() but you must remember to restore 
     // the old the cursor position. In this way we assure not modify the state of the list.
     //Hint: use const_cast<> to remove constness of this.
-
+    auto aux = _head;
+    while (aux->item() != it and aux->next() != nullptr)
+    {
+        aux = aux->next();
+    }
+    found = (aux->item() == it);
     //
     return found;
 }
@@ -235,7 +270,23 @@ bool SList<T>::has(T const& it) const
 template<class T>
 void SList<T>::fold(std::ostream& out) const
 {
-    //TODO
+    //
+    out << "[";
+
+    if (is_empty())
+    {
+        out << "]";
+        return ;
+    }
+
+    typename SNode<T>::Ref aux = _head;
+
+    while (aux -> has_next())
+    {
+        out << " " << aux -> item();
+        aux = aux -> next();
+    }
+    out << " " << aux -> item() << " ]";
 
     //
 }
@@ -244,8 +295,8 @@ template<class T>
 void SList<T>::set_current(T const& new_v)
 {
     assert(!is_empty());
-    //TODO
-
+    //
+    _current -> set_item(new_v);
     //
     assert(current()==new_v);
 }
@@ -257,11 +308,22 @@ void SList<T>::push_front(T const& new_it)
 #ifndef NDEBUG
     size_t old_size = size();
 #endif
-    //TODO
+    //
     //Remeber to update current if current is in the head.
 
 
 
+    auto aux_ = SNode<T>::create(new_it, _current);
+    aux_ -> set_next(_head);
+
+    if (_current == _head)
+    {
+        _current = aux_;
+    }
+    _head = aux_;
+
+
+    _size += 1;
     //
     assert(front()==new_it);
     assert(size() == (old_size+1));
@@ -277,8 +339,21 @@ void SList<T>::insert(T const& new_it)
     if (!old_is_empty)
         old_item = current();
 #endif
-    //TODO
+    //
 
+    if (is_empty())
+    {
+        push_front(new_it);
+    }
+
+    else{
+        auto aux = SNode<T>::create(new_it, _current);
+
+        aux -> set_item(new_it);
+        aux -> set_next(_current -> next());
+        _current -> set_next(aux);
+        _size += 1;
+    }
 
 
     //
@@ -295,9 +370,21 @@ void SList<T>::pop_front()
     size_t old_size = size();
     auto old_head_next = head()->next();
 #endif
-    //TODO
-
-
+    //
+    if (_size == 1)
+    {
+        _current = nullptr;
+        _head = nullptr;
+    }
+    else
+    {
+        _head = _head -> next();
+        if (_current == _head)
+        {
+                _current =_current -> next();
+        }
+    }
+    _size -= 1;
 
     //
     assert(is_empty() || head() == old_head_next);
@@ -316,14 +403,40 @@ void SList<T>::remove()
     if (has_next())
         old_next=next();
 #endif
-    //TODO
+    //
     //Case 1: current is the head.
 
     //Case 2: remove in a middle position.
 
     //Case 3: remove the last element.
-    //Remenber to locate previous of prev_.
+    //Remember to locate previous of prev_.
 
+    if (_current == _head)
+    {
+        _head = _head->next();
+        _current = _head;
+    }
+    else if (!has_next())
+    {
+        typename SNode<T>::Ref prev_ = head();
+        while(prev_ -> next() != _current)
+        {
+            prev_ = prev_->next();
+        }
+        _current = prev_;
+        _current -> set_next(nullptr);
+    }
+    else
+    {
+        typename SNode<T>::Ref prev_ = _head;
+        while (prev_->next() != _current)
+        {
+            prev_ = prev_->next();
+        }
+        prev_->set_next(_current->next());
+        _current = prev_->next();
+    }
+    _size -= 1;
 
 
     //
@@ -338,8 +451,8 @@ void SList<T>::goto_next()
 #ifndef NDEBUG
     auto old_next = next();
 #endif
-    //TODO
-
+    //
+    _current = _current -> next();
     //
     assert(current()==old_next);
 }
@@ -348,7 +461,8 @@ template<class T>
 void SList<T>::goto_first()
 {
     assert(!is_empty());
-    //TODO
+    //
+    _current = _head;
 
     //
     assert(current()==front());
@@ -359,8 +473,21 @@ bool SList<T>::find(T const& it)
 {
     assert(!is_empty());
     bool found = false;
-    //TODO
+    //
 
+    _current = _head;
+    if (_current -> item() == it)
+    {
+        found = true;
+    }
+    else if (_head->next()->has_next())
+    {
+        found = find_next(it);
+    }
+    else
+    {
+        found = (_current -> item() == it);
+    }
     //
     assert(!found || current()==it);
     assert(found || !has_next());
@@ -372,7 +499,22 @@ bool SList<T>::find_next(T const& it)
 {
     assert(has_next());
     bool found = false;
-    //TODO
+    //
+
+    _current = _current -> next();
+
+    if (_current->item() == it)
+    {
+        found = true;
+    }
+    else{
+        while (_current -> has_next() and !found)
+        {
+            _current = _current -> next();
+            found = (_current -> item() == it);
+        }
+    }
+
 
     //
     assert(!found || current()==it);
