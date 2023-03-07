@@ -88,9 +88,12 @@ public:
 
     /** }*/
 protected:
-    //TODO
+    //
     //Specify a representation.
     //Hint: use typename BTNode<T>::Ref for the link to other nodes.
+    T item_;
+    BTNode<T>::Ref left_;
+    BTNode<T>::Ref right_;
 
     //
 };
@@ -265,9 +268,9 @@ protected:
    */
   void set_root(typename BTNode<T>::Ref new_root);
 
-  //TODO
+  //
   //Give a representation.
-
+  typename BTNode<T>::Ref root_;
 };
 
 #include "btree_imp.hpp"
