@@ -22,7 +22,19 @@ int compute_height (typename BTree<T>::Ref t)
     assert(t != nullptr);
     int height = 0;
     //TODO
-
+    // Hint: when you call a template into other template maybe you need
+    // to specialize the call.
+    height = -1;
+    if (!t->is_empty())
+    {
+        // Now minimum height is gonna be 0
+        height = 0; 
+        int left_height = compute_height<T>(t->left()); 
+        int right_height = compute_height<T>(t->right()); 
+        // Add maximum
+        height += left_height > right_height ? left_height : right_height;
+        height += 1;
+    }
     //
     return height;
 }
@@ -32,10 +44,15 @@ size_t compute_size (typename BTree<T>::Ref t)
 {
     assert(t != nullptr);
     size_t ret_val = 0;
-    //TODO
+    //
     //Hint: when you call a template into other template maybe you need
     // to specialize the call.
-
+    if (!t->is_empty())
+    {
+        ret_val = 1;
+        ret_val += compute_size<T>(t->left());
+        ret_val += compute_size<T>(t->right());
+    }
     //
     return ret_val;
 }
@@ -49,7 +66,7 @@ prefix_process(typename BTree<T>::Ref tree, Processor& p)
     //TODO
     //Hint: when you call a template into other template maybe you need
     // to specialize the call.
-
+    
     //
     return retVal;
 }
