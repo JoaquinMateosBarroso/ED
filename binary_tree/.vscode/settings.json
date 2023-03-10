@@ -2,6 +2,7 @@
     "files.associations": {
         "bit": "cpp",
         "*.tcc": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "iosfwd": "cpp"
     }
 }
