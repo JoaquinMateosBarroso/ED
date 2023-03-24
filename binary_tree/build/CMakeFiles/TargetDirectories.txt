@@ -1,0 +1,4 @@
+/home/joaquin/Documentos/Asignaturas/ED/binary_tree/build/CMakeFiles/test_btree_node.dir
+/home/joaquin/Documentos/Asignaturas/ED/binary_tree/build/CMakeFiles/test_btree.dir
+/home/joaquin/Documentos/Asignaturas/ED/binary_tree/build/CMakeFiles/edit_cache.dir
+/home/joaquin/Documentos/Asignaturas/ED/binary_tree/build/CMakeFiles/rebuild_cache.dir
