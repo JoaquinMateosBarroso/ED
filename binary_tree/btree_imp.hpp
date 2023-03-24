@@ -241,7 +241,7 @@ template<class T>
     {
         assert(is_empty());
         //
-        root_ = BTree<T>::create(it);
+        root_ = BTNode<T>::create(it, nullptr, nullptr);
         //
         assert(!is_empty());
         assert(item()==it);

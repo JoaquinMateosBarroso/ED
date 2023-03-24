@@ -139,8 +139,7 @@ breadth_first_process(typename BTree<T>::Ref tree, Processor& p)
             }if (!(aux->right())->is_empty())
             {
                 frontera.push(aux->right());
-            }
-            
+            } 
         }
     }
     //
@@ -227,7 +226,7 @@ bool search_prefix(typename BTree<T>::Ref tree, const T& it, size_t& count)
 {
     bool found = false;
     count = 0;
-    //TODO
+    //
     //You must create a lambda function with a parameter to compare it to the
     // value of the element to be searched for.
     // Use the lambda with the prefix_process.
@@ -248,12 +247,19 @@ bool search_infix(typename BTree<T>::Ref tree, const T& it, size_t& count)
 {
     bool found = false;
     count = 0;
-    //TODO
+    //
     //You must create a lambda function with a parameter to compare it to the
     // value of the element to be searched for.
     // Use the lambda with the infix_process.
     //Remember: Also, the lambda must update the count variable and
     //must return True/False.
+    auto noteq = [&it, &count](typename BTree<T>::Ref tree)
+    {
+        count ++;
+        return tree->item() != it;
+    };
+    found = !infix_process<T>(tree, noteq);
+
 
     //
     return found;
@@ -264,13 +270,18 @@ bool search_postfix(typename BTree<T>::Ref tree, const T& it, size_t& count)
 {
     bool found = false;
     count = 0;
-    //TODO
+    //
     //You must create a lambda function with a parameter to compare it to the
     // value of the element to be searched for.
     // Use the lambda with the postfix_process.
     //Remember: Also, the lambda must update the count variable and
     //must return True/False.
-
+    auto noteq = [&it, &count](typename BTree<T>::Ref tree)
+    {
+        count ++;
+        return tree->item() != it;
+    };
+    found = !postfix_process<T>(tree, noteq);
     //
     return found;
 }
@@ -280,13 +291,19 @@ bool search_breadth_first(typename BTree<T>::Ref tree, const T& it, size_t& coun
 {
     bool found = false;
     count = 0;
-    //TODO
+    //
     //You must create a lambda function with a parameter to compare it to the
     // value of the element to be searched for.
     // Use the lambda with the breadth_first_process.
     //Remember: Also, the lambda must update the count variable and
     //must return True/False.
+    auto noteq = [&it, &count](typename BTree<T>::Ref tree)
+    {
+        count++;
+        return tree->item() != it;
+    };
 
+    found = !breadth_first_process<T>(tree, noteq);
     //
     return found;
 }
@@ -300,7 +317,25 @@ bool check_btree_in_order(typename BTree<T>::Ref const& tree)
     //Hint: You can create a lambda function with a parameter to compare it with
     // the last the value seen.
     // Use the lambda with the infix_process.
-    
+    T* anterior = nullptr;
+    auto ordenado = [&anterior](typename BTree<T>::Ref const& tree)
+    {
+
+        //Hace falta idea feliz; mejor con muchos ifs
+        if (tree->is_empty())
+        {
+            return true;
+        }
+        if (anterior == nullptr)
+        {
+            anterior = new T(tree->item());
+            return true;
+        }
+        T* aux = anterior;
+        anterior = new T(tree->item());
+        return tree->item() > *aux;
+    };
+    ret_val = infix_process<T>(tree, ordenado);
     //
     return ret_val;
 }
@@ -311,6 +346,11 @@ bool has_in_order(typename BTree<T>::Ref tree, T const& v)
     assert(check_btree_in_order<T>(tree));    
     bool ret_val = false;
     //TODO
+    auto noigual = [&v](typename BTree<T>::Ref const& tree)
+    {
+        return tree->item() != v;
+    };
+    ret_val = !postfix_process<T>(tree, noigual);
 
     //
     return ret_val;
@@ -321,7 +361,37 @@ void insert_in_order(typename BTree<T>::Ref tree, T const& v)
 {
     assert(check_btree_in_order<T>(tree));
     //TODO
-
+    if (tree->is_empty())
+    {
+        tree->create_root(v);
+    }
+    else{
+        if (tree->item() != v)
+        {
+            if (v < tree->item())
+            {
+                if (tree->left()->is_empty())
+                {
+                    tree->set_left(BTree<T>::create(v));
+                }
+                else
+                {
+                    insert_in_order(tree->left(), v);
+                }
+            }
+            else
+            {            
+                if (tree->right()->is_empty())
+                {
+                    tree->set_right(BTree<T>::create(v));
+                }
+                else
+                {
+                    insert_in_order(tree->right(), v);
+                }
+            }
+        }
+    }
     //
     assert(has_in_order<T>(tree, v));
 }

@@ -3,6 +3,7 @@
         "bit": "cpp",
         "*.tcc": "cpp",
         "random": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "iostream": "cpp"
     }
 }
