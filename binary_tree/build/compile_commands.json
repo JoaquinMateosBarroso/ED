@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/joaquin/Documentos/Asignaturas/ED/binary_tree/build",
+  "command": "/usr/bin/g++ -g -std=gnu++11 -o CMakeFiles/test_btree_node.dir/test_btree_node.cpp.o -c /home/joaquin/Documentos/Asignaturas/ED/binary_tree/test_btree_node.cpp",
+  "file": "/home/joaquin/Documentos/Asignaturas/ED/binary_tree/test_btree_node.cpp"
+},
+{
+  "directory": "/home/joaquin/Documentos/Asignaturas/ED/binary_tree/build",
+  "command": "/usr/bin/g++ -g -std=gnu++11 -o CMakeFiles/test_btree.dir/test_btree.cpp.o -c /home/joaquin/Documentos/Asignaturas/ED/binary_tree/test_btree.cpp",
+  "file": "/home/joaquin/Documentos/Asignaturas/ED/binary_tree/test_btree.cpp"
+}
+]
