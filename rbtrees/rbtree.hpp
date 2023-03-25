@@ -170,10 +170,13 @@ protected:
   RBTNode(T const &it = T(), RBTNode<T>::Color color = RED, RBTNode<T>::Ref parent = nullptr,
           RBTNode<T>::Ref left = nullptr, RBTNode<T>::Ref right = nullptr);
 
-  // TODO
+  //
   // Give a representation.
-  
-  
+  T item_;
+  RBTNode<T>::Color color_;
+  RBTNode<T>::Ref parent_;
+  RBTNode<T>::Ref left_;
+  RBTNode<T>::Ref right_;
   //
   RBTNode<T>::Ref this_; //"this" like a shared reference.
 };
@@ -527,9 +530,11 @@ protected:
   int prefix_draw_node(std::ostream &out, typename RBTNode<T>::Ref const &node) const;
   
 
-  // TODO
+  // 
   // Give a representation.
-  
+  typename RBTNode<T>::Ref root_;
+  typename RBTNode<T>::Ref current_;
+  typename RBTNode<T>::Ref parent_;
   
   //
   Ref this_;

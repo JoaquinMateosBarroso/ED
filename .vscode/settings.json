@@ -1,3 +1,9 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/packet_processor"
+    "cmake.sourceDirectory": "${workspaceFolder}/rbtrees",
+    "files.associations": {
+        "bit": "cpp",
+        "*.tcc": "cpp",
+        "random": "cpp",
+        "valarray": "cpp"
+    }
 }
