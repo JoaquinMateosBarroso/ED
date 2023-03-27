@@ -199,9 +199,9 @@ void RBTNode<T>::set_child(int idx, RBTNode<T>::Ref new_child)
     // 
     // Remember to update the parent link of new_child too.
     if(idx == 0){
-        left_ = new_child;
+        set_left(new_child);
     }else{
-        right_ = new_child;
+        set_right(new_child);
     }
     //
     assert(idx == 0 || new_child == right());
@@ -347,7 +347,22 @@ void create_inserting_median(std::vector<T> const &data,
     // Hint: if (end==begin) none thing must be done (it is an empty sub array)
     //  else, insert the median in the tree and (recursively) process
     //  the two sub sequences [begin, median_idx) and [median_idx+1, end)
+    
+    if (begin != end)
+    {
+        int half = begin + (end-begin)/2;
+        T median = data[half];
+        
+        
+        tree->insert(median);
+        
+        create_inserting_median(data, begin, half, tree);
+        create_inserting_median(data, half+1, end, tree);
 
+        
+        
+        
+    }
     //
 }
 
@@ -361,6 +376,10 @@ create_perfectly_balanced_bstree(std::vector<T> &data)
     // Remember: first, an ordered sequence (using < order) of values is needed.
     // Then you should use the above create_inserting_median function
     // on a empty tree to recursively create the perfectly balanced bstree.
+    std::sort(data.begin(), data.end());
+
+
+    create_inserting_median(data, 0, int(data.size()), tree);
 
     //
     assert(tree != nullptr);
@@ -571,7 +590,7 @@ template <class T>
 bool RBTree<T>::is_a_binary_search_tree() const
 {
     bool is_bst = true;
-    // TODO
+    // 
     // Remember: a empty tree is a binary search tree.
     //
     // Remember: for a non empty binary search tree, the in-fix traversal from
@@ -580,7 +599,19 @@ bool RBTree<T>::is_a_binary_search_tree() const
     // Remember: use a lambda function with signature '(T v) -> bool' to
     //  implement the Processor.
     //
-
+    if (!is_empty())
+    {
+        if (root_->left() != nullptr)
+        {
+            is_bst = is_bst and root_->item() > root_->left()->item();
+            is_bst = is_bst and left()->is_a_binary_search_tree();
+        }
+        if (root_->right() != nullptr)
+        {
+            is_bst = is_bst and root_->item() < root_->right()->item();
+            is_bst = is_bst and right()->is_a_binary_search_tree();
+        }    
+    }
     //
     return is_bst;
 }
@@ -744,23 +775,50 @@ void RBTree<T>::remove()
 
     if (replace_with_subtree)
     {
-        // TODO
+        // 
         // Manage cases 0,1,2
-        if (current_left()== nullptr)
+
+        if (current_->left()==nullptr)
         {
-            if (current_==root_)
+            auto aux = current_->right();
+            if (current_ != root_)
             {
-                root_ = current_->right();
+                parent_ = current_->parent();
+                parent_->set_child(current_ == parent_->right(), aux);
             }
             else
             {
-                //TODO
+                root_ = aux;
             }
         }
-        else if (current_right() == nullptr)
-        {
-            //TODO
+        else if (current_->right() == nullptr)
+        {            
+            auto aux = current_->left();
+            if (current_ != root_)
+            {
+                parent_ = current_->parent();
+                parent_->set_child(current_ == parent_->right(), aux);
+
+            }
+            else
+            {
+                root_ = aux;
+            }
         }
+        // Ahora deben ser ambos distintos de nullptr
+        else
+        {
+            //
+        
+            auto oldcurrent_ = current_;
+            find_inorder_successor();
+            oldcurrent_->set_item(current_->item());
+            remove();
+        
+        }
+
+
+        current_ = nullptr;
         //
         assert(check_parent_chains());
         make_red_black_after_removing(subtree);
@@ -903,8 +961,15 @@ void RBTree<T>::find_inorder_successor()
 #ifndef NDEBUG
     T old_curr = current();
 #endif
-    // TODO
-
+    // 
+    if (current_->right() != nullptr)
+    {
+        current_ = current_->right();
+        while (current_->left() != nullptr)
+        {
+            current_ = current_->left();
+        }
+    }
     //
     assert(current_exists() && current_node()->left() == nullptr);
 #ifndef NDEBUG
