@@ -45,7 +45,7 @@ main(int argc, const char* argv[])
         std::string line;
         while(std::getline(input_file, line))
         {
-            if (line[0]=='#')
+            if (line=="" || line[0]=='#')
                 continue;
 
             input_line.clear();

@@ -45,6 +45,9 @@ main(int argc, const char* argv[])
         std::cout << std::unitbuf;
         while(input_file >> command)
         {
+            if (command == "" || command[0]=='#')
+                continue;
+                
             if (command == "NODE_CREATE")
             {
                 int idx;

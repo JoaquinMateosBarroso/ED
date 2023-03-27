@@ -1,2 +1,7 @@
 * 1.0
 - Start release.
+* 1.1
+- Fixed compiling error in rbtree_imp.hpp due to do not include "limits".
+- Fixed bug when load test line with "" or "#...".
+- Fixed bug in DO_NOT_MODIFIY.TXT file.
+

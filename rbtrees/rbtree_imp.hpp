@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <limits>
 
 #include "rbtree.hpp"
 
