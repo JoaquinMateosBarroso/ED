@@ -859,6 +859,7 @@ void RBTree<T>::remove()
             else
             {
                 root_ = aux;
+                aux->set_parent(nullptr);
             }
         }
         else if (current_->right() == nullptr)
@@ -1084,7 +1085,7 @@ void RBTree<T>::make_red_black_after_inserting()
 #ifdef __ONLY_BSTREE__
     return;
 #else
-    // TODO
+    // 
     // Hint: @see https://www.geeksforgeeks.org/insertion-in-red-black-tree/
 
     typename RBTNode<T>::Ref N = current_node();
@@ -1191,8 +1192,11 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
 
     if (N->color() == RBTNode<T>::RED || (V != nullptr && V->color() == RBTNode<T>::RED))
     {
-        // TODO: case 2 (N or V is red)
-            p_n_dir++; // To avoid warning.
+        // case 2 (N or V is red)
+            if (V != nullptr)
+            {
+                V->set_color(RBTNode<T>::BLACK);
+            }
         //
         return;
     }
@@ -1205,9 +1209,16 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
     // Case 3: N and V are black.
     while (P != nullptr)
     {
-        // TODO update S, D, C according to p_n_dir
+        // update S, D, C according to p_n_dir
         // Remember: S could be void.
-        
+        S = P -> child(1-p_n_dir);
+        if (S != nullptr)
+        {
+            C = S -> child(p_n_dir);
+            D = S -> child(1-p_n_dir);
+        }
+
+
         //
 
         if (S == nullptr || S->color() == RBTNode<T>::BLACK)
@@ -1223,10 +1234,18 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
                     // TODO: case 3.1a when only C is red (RL, LR)
                     // Remember update new D and S.
 
+                    C->set_color(RBTNode<T>::BLACK);
+                    S->set_color(RBTNode<T>::RED);
+                    D = S;
+                    S = rotate(S, 1-p_n_dir);
+                    
                     //
                 }
-                // TODO: case 3.1a when D is Red (RR, LL)
-
+                // case 3.1a when D is Red (RR, LL)
+                D->set_color(RBTNode<T>::BLACK);
+                S->set_color(P->color());
+                P->set_color(RBTNode<T>::BLACK);
+                rotate(P, p_n_dir);
                 //
                 return;
             }
@@ -1236,7 +1255,7 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
                 if (P->color() == RBTNode<T>::RED)
                 {
                     // TODO: Case 3.1b (parent is RED)
-
+                    P->set_color(RBTNode<T>::BLACK);
                     //
                     return;
                 }
@@ -1245,7 +1264,9 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
                     // TODO: Case 3.1b (parent is black)
                     // Remember: we must go up one level, so
                     // update N, P, and p_n_dir according (if new P<>Void).
-
+                    N = P;
+                    P = P->parent();
+                    p_n_dir = P->child(0)==N ? 0 : 1;
                     //
                 }
                 //
@@ -1255,6 +1276,11 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
         {
             // TODO: Case 3.2: N,V are black, S is red
 
+        
+            P->set_color(RBTNode<T>::RED);
+            S->set_color(RBTNode<T>::BLACK);
+            rotate(P, p_n_dir);            
+            
             //
         }
     }
@@ -1308,7 +1334,7 @@ compute_min_max_branch_length(typename RBTree<T>::Ref tree)
     assert(tree != nullptr);
     size_t min_path_l = 0;
     size_t max_path_l = 0;
-    // TODO
+    // 
     //  Hint: you can use a lambda function with prototype:
     //  std::function<void(typename RBTree<T>::Ref subt, size_t & min, size_t & max, size_t curr_l)>
     //  to recursive go down through the tree.
