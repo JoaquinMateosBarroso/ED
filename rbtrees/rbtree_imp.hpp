@@ -633,22 +633,21 @@ bool RBTree<T>::meet_red_invariant() const
     //
     // Remember: A red node must not have a red child.
     // Remember: An empty tree meets the invariant.
-    
     if (!is_empty())
     {
-        bool fail_left = true;
-        bool fail_right = true;
+        bool correct_left = true;
+        bool correct_right = true;
         
         if (root_ -> color() == RBTNode<T>::RED)
         {
-            fail_left = left() -> is_empty()? true: root_ -> left() -> color() == RBTNode<T>::RED;
-            fail_right =  right() -> is_empty()? true: root_ -> right() -> color() == RBTNode<T>::RED;
+            correct_left = left() -> is_empty()? true: root_ -> left() -> color() != RBTNode<T>::RED;
+            correct_right =  right() -> is_empty()? true: root_ -> right() -> color() != RBTNode<T>::RED;
         }
 
-        bool fail_all_left = left() -> is_empty()? true: left() -> meet_red_invariant();
-        bool fail_all_right = right() -> is_empty()? true: right() -> meet_red_invariant();
+        bool correct_all_left = left() -> is_empty()? true: left() -> meet_red_invariant();
+        bool correct_all_right = right() -> is_empty()? true: right() -> meet_red_invariant();
 
-        is_met = fail_left and fail_right and fail_all_left and fail_all_right;
+        is_met = correct_left and correct_right and correct_all_left and correct_all_right;
     }
     //
     return is_met;
@@ -662,7 +661,7 @@ bool RBTree<T>::meet_black_invariant() const
     return true;
 #else
     bool is_met = true;
-    // TODO
+    //
     // Remember: The number of black nodes for each path from root to any leaf must be equal.
     // Hint: use a lambda function to travel the tree.
     return true;
@@ -796,10 +795,11 @@ void RBTree<T>::insert(T const &k)
             set_current_node(aux);
         } 
 
-        //
 
+        //
+        
         assert(check_parent_chains());
-        make_red_black_after_inserting();
+        make_red_black_after_inserting();        //fold(std::cout); std::cout << "   " << k << check_min_max_branch_length() << "\n\n\n\n\n";
         assert(check_parent_chains());
         assert(check_min_max_branch_length());
     }
@@ -1060,7 +1060,7 @@ RBTree<T>::rotate(typename RBTNode<T>::Ref P,
     if (__DEBUG__ > 1)
         std::clog << "Rotating to " << (dir == 0 ? "left" : "right") << " on key " << P->item() << std::endl;
 #endif
-    // TODO
+    //
     // Remember update links to parents.
     // Hint: you can see wikipedia: https://en.wikipedia.org/wiki/Tree_rotation
     
@@ -1074,10 +1074,9 @@ RBTree<T>::rotate(typename RBTNode<T>::Ref P,
     N->set_child(dir, P);
     N->set_parent(aux);
     if (P == root_)
-    {
         root_ = N;
-    }
-    
+    else
+        aux -> set_child(aux->right() == P, N);
     //
     return N;
 }
@@ -1118,7 +1117,7 @@ void RBTree<T>::make_red_black_after_inserting()
 
         // From here P is red.
 
-        //TODO: update G, g_p_dir, U.
+        // update G, g_p_dir, U.
         
         // We know G exists because P->color() == RED
         G = P->parent();
@@ -1130,10 +1129,11 @@ void RBTree<T>::make_red_black_after_inserting()
 
         if (U != nullptr && U->color() == RBTNode<T>::RED)
         {
-            //TODO Case 2:
+            // Case 2:
+            
             U->set_color(RBTNode<T>::BLACK);
             P->set_color(RBTNode<T>::BLACK);
-            G->set_color(RBTNode<T>::RED);
+            if (G != root_) G->set_color(RBTNode<T>::RED);
             N = G;
             P = G->parent();
             //
@@ -1142,17 +1142,23 @@ void RBTree<T>::make_red_black_after_inserting()
         {
             //Case 3:
 
-            //TODO: update p_n_dir
+            // update p_n_dir
             p_n_dir = P -> right() == N;
 
             //
             if (g_p_dir != p_n_dir)
             {
-                // TODO: cases 3c (LR) 3d (RL)
+                // cases 3c (LR) 3d (RL)
+                P -> set_child(p_n_dir, nullptr);
+                G -> set_child(g_p_dir, N);
+                N -> set_child(g_p_dir, P);
+
+                P -> set_color(RBTNode<T>::RED);
+                N -> set_color(RBTNode<T>::BLACK);
 
                 //
             }
-            // TODO: cases 3a (LL) 3b (RR)
+            // cases 3a (LL) 3b (RR)
             
             rotate(G, 1-g_p_dir); 
             
@@ -1352,7 +1358,7 @@ bool RBTree<T>::check_min_max_branch_length() const
     return true;
 #else
     size_t min_path_l, max_path_l;
-    std::tie(min_path_l, max_path_l) = compute_min_max_branch_length<T>(This());
+    std::tie(min_path_l, max_path_l) = compute_min_max_branch_length<T>(This());// std::cout << " max:" << (max_path_l + 1) << "min:" << min_path_l+1;
     return (max_path_l + 1) <= (2 * (min_path_l + 1));
 #endif
 }
