@@ -840,7 +840,7 @@ void RBTree<T>::remove()
 
     //
     //  Check which of BSTree cases 0,1,2,3 we have (see theoretical class slides).
-    replace_with_subtree = !(current_->left()==nullptr and current_->right()==nullptr);
+    replace_with_subtree = (current_->left()==nullptr or current_->right()==nullptr);
     //
 
     if (replace_with_subtree)
@@ -848,48 +848,48 @@ void RBTree<T>::remove()
         // 
         // Manage cases 0,1,2
 
-        if (current_->left()==nullptr)
+        // Caso 0
+        if (current_->left() == nullptr and current_->right() == nullptr)
         {
-            auto aux = current_->right();
-            if (current_ != root_)
+            if (current_->parent() != nullptr)
             {
-                parent_ = current_->parent();
-                parent_->set_child(current_ == parent_->right(), aux);
+                current_->parent()->set_child(current_->parent()->right()==current_, nullptr);
             }
             else
             {
-                root_ = aux;
-                aux->set_parent(nullptr);
+                root_ = nullptr;
             }
         }
-        else if (current_->right() == nullptr)
-        {            
-            auto aux = current_->left();
-            if (current_ != root_)
-            {
-                parent_ = current_->parent();
-                parent_->set_child(current_ == parent_->right(), aux);
+        else{
 
+            // Caso 1
+            if (current_ ->left())
+            {
+                if (current_->parent() != nullptr)
+                {
+                    current_->parent()->set_child(current_->parent()->right()==current_, current_->left());
+                }
+                else
+                {
+                    root_ = current_->left();
+                }
             }
+
+
+            // Caso 2
             else
             {
-                root_ = aux;
+                if (current_->parent())
+                {
+                    current_->parent()->set_child(current_->parent()->right()==current_, current_->right());
+                }
+                else
+                {
+                    root_ = current_->right();
+                }
             }
-        }
-        // Ahora deben ser ambos distintos de nullptr
-        else
-        {
-            //
-        
-            auto oldcurrent_ = current_;
-            find_inorder_successor();
-            oldcurrent_->set_item(current_->item());
-            remove();
-        
-        }
 
-
-        current_ = nullptr;
+        }
         //
         assert(check_parent_chains());
         make_red_black_after_removing(subtree);
@@ -902,9 +902,14 @@ void RBTree<T>::remove()
     {
         //
         // Manage case 3.
-        parent_ = current_ -> parent();
-        parent_->set_child(parent_->right()==current_, nullptr);
-        current_ = nullptr;
+        auto aux = current_;
+        find_inorder_successor();
+        
+        auto aux_t = aux->item();
+        aux->set_item(current_->item());
+        current_->set_item(aux_t);
+        remove();
+
         //
     }
 
@@ -1033,11 +1038,13 @@ void RBTree<T>::find_inorder_successor()
     T old_curr = current();
 #endif
     // 
-    if (current_->right() != nullptr)
+    if (current_->right())
     {
+        parent_ = current_;
         current_ = current_->right();
-        while (current_->left() != nullptr)
+        while (current_->left())
         {
+            parent_ = current_;
             current_ = current_->left();
         }
     }
