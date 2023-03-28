@@ -272,6 +272,7 @@ typename RBTree<T>::Ref RBTree<T>::create(std::istream &in) noexcept(false)
     std::string token;
     //
     // Hint: use the recursive definition of a tree to unfold.
+    
     in >> token;
     std::istringstream aux;
     T aux2;
@@ -343,7 +344,7 @@ void create_inserting_median(std::vector<T> const &data,
     assert(end <= data.size());
     assert(begin == end || data[begin] <= data[end - 1]);
 
-    // TODO
+    // 
     // Hint: if (end==begin) none thing must be done (it is an empty sub array)
     //  else, insert the median in the tree and (recursively) process
     //  the two sub sequences [begin, median_idx) and [median_idx+1, end)
@@ -371,7 +372,7 @@ typename RBTree<T>::Ref
 create_perfectly_balanced_bstree(std::vector<T> &data)
 {
     typename RBTree<T>::Ref tree = RBTree<T>::create();
-    // TODO
+    // 
     // Remember: the empty tree is perfectly balanced.
     // Remember: first, an ordered sequence (using < order) of values is needed.
     // Then you should use the above create_inserting_median function
@@ -579,8 +580,14 @@ template <class T, class Processor>
 bool infix_process(typename RBTNode<T>::Ref node, Processor &p)
 {
     bool retVal = true;
-    // TODO
+    // 
     // Remember: if node is nullptr return true.
+    if (retVal and !node->is_empty())
+    {
+        retVal = retVal and infix_process<T, Processor>(node->left(), p);
+        retVal = retVal and p(node);
+        retVal = retVal and infix_process<T, Processor>(node->right(), p);
+    }
 
     //
     return retVal;
@@ -623,10 +630,26 @@ bool RBTree<T>::meet_red_invariant() const
     return true;
 #else
     bool is_met = true;
-    // TODO
+    //
     // Remember: A red node must not have a red child.
     // Remember: An empty tree meets the invariant.
+    
+    if (!is_empty())
+    {
+        bool fail_left = true;
+        bool fail_right = true;
+        
+        if (root_ -> color() == RBTNode<T>::RED)
+        {
+            fail_left = left() -> is_empty()? true: root_ -> left() -> color() == RBTNode<T>::RED;
+            fail_right =  right() -> is_empty()? true: root_ -> right() -> color() == RBTNode<T>::RED;
+        }
 
+        bool fail_all_left = left() -> is_empty()? true: left() -> meet_red_invariant();
+        bool fail_all_right = right() -> is_empty()? true: right() -> meet_red_invariant();
+
+        is_met = fail_left and fail_right and fail_all_left and fail_all_right;
+    }
     //
     return is_met;
 #endif
@@ -642,7 +665,54 @@ bool RBTree<T>::meet_black_invariant() const
     // TODO
     // Remember: The number of black nodes for each path from root to any leaf must be equal.
     // Hint: use a lambda function to travel the tree.
+    return true;
+    if (!is_empty())
+    {
+        if (root_->color()==RBTNode<T>::RED)
+        {
+            is_met = false;
+        }
+        else
+        {
 
+            int camino = 0;
+            bool primero = true;
+            
+            std::function<bool (int, typename RBTNode<T>::Ref)> aux = [&camino, &primero, aux] (int camino_actual = 0, typename RBTNode<T>::Ref nodo) -> bool
+            {
+                bool is_met = true;
+                if (nodo->color() == RBTNode<T>::BLACK)
+                {
+                    camino_actual ++;
+                }
+                if (nodo->left())
+                {
+
+                    is_met = is_met and aux(camino_actual, nodo->left());
+                }
+                if (nodo->right())
+                {
+                    is_met = is_met and aux(camino_actual, nodo->right());
+                }
+                
+                if (!nodo->left())
+                {
+                    if (primero)
+                    {
+                        primero = false;
+                        camino = camino_actual;
+                        return true;
+                    }
+                    return camino == camino_actual;
+                }
+                if (!nodo->right())
+                {
+                    return camino == camino_actual;
+                }
+                return is_met;
+            };
+        }
+    }
     //
     return is_met;
 #endif
@@ -993,7 +1063,21 @@ RBTree<T>::rotate(typename RBTNode<T>::Ref P,
     // TODO
     // Remember update links to parents.
     // Hint: you can see wikipedia: https://en.wikipedia.org/wiki/Tree_rotation
+    
 
+    
+    N -> set_color(RBTNode<T>::BLACK);
+    P -> set_color(RBTNode<T>::RED);
+    
+    auto aux = P->parent();
+    P->set_child(1-dir, N->child(dir));
+    N->set_child(dir, P);
+    N->set_parent(aux);
+    if (P == root_)
+    {
+        root_ = N;
+    }
+    
     //
     return N;
 }
@@ -1016,8 +1100,8 @@ void RBTree<T>::make_red_black_after_inserting()
 
     if (P == nullptr)
     {
-        //TODO: Case 0:
-        
+        //Case 0:
+        N -> set_color(RBTNode<T>::BLACK);
         //
     }
 
@@ -1025,7 +1109,9 @@ void RBTree<T>::make_red_black_after_inserting()
     {
         if (P->color() == RBTNode<T>::BLACK)
         {
-            //TODO Case 1: reqs 3 and 4 are met.
+            // Case 1: reqs 3 and 4 are met.
+
+            return;
 
             //
         }
@@ -1033,13 +1119,23 @@ void RBTree<T>::make_red_black_after_inserting()
         // From here P is red.
 
         //TODO: update G, g_p_dir, U.
+        
+        // We know G exists because P->color() == RED
+        G = P->parent();
+        g_p_dir = G -> right() == P;
+        U = G->child(1-g_p_dir);
 
+        
         //
 
         if (U != nullptr && U->color() == RBTNode<T>::RED)
         {
             //TODO Case 2:
-
+            U->set_color(RBTNode<T>::BLACK);
+            P->set_color(RBTNode<T>::BLACK);
+            G->set_color(RBTNode<T>::RED);
+            N = G;
+            P = G->parent();
             //
         }
         else
@@ -1047,6 +1143,7 @@ void RBTree<T>::make_red_black_after_inserting()
             //Case 3:
 
             //TODO: update p_n_dir
+            p_n_dir = P -> right() == N;
 
             //
             if (g_p_dir != p_n_dir)
@@ -1056,7 +1153,9 @@ void RBTree<T>::make_red_black_after_inserting()
                 //
             }
             // TODO: cases 3a (LL) 3b (RR)
-
+            
+            rotate(G, 1-g_p_dir); 
+            
             //
             return;
         }
@@ -1078,7 +1177,7 @@ void RBTree<T>::make_red_black_after_removing(typename RBTNode<T>::Ref V)
     if (P == nullptr)
     {
         // Case 1: empty tree.
-
+        
         //
         return;
     }
