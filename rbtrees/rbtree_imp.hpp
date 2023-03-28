@@ -1066,9 +1066,6 @@ RBTree<T>::rotate(typename RBTNode<T>::Ref P,
     
 
     
-    N -> set_color(RBTNode<T>::BLACK);
-    P -> set_color(RBTNode<T>::RED);
-    
     auto aux = P->parent();
     P->set_child(1-dir, N->child(dir));
     N->set_child(dir, P);
@@ -1133,9 +1130,14 @@ void RBTree<T>::make_red_black_after_inserting()
             
             U->set_color(RBTNode<T>::BLACK);
             P->set_color(RBTNode<T>::BLACK);
-            if (G != root_) G->set_color(RBTNode<T>::RED);
-            N = G;
-            P = G->parent();
+
+            if (G == root_ or G->parent() == nullptr) return; 
+            else
+            {
+                G->set_color(RBTNode<T>::RED);
+                N = G;
+                P = N->parent();
+            }
             //
         }
         else
@@ -1149,18 +1151,15 @@ void RBTree<T>::make_red_black_after_inserting()
             if (g_p_dir != p_n_dir)
             {
                 // cases 3c (LR) 3d (RL)
-                P -> set_child(p_n_dir, nullptr);
-                G -> set_child(g_p_dir, N);
-                N -> set_child(g_p_dir, P);
-
-                P -> set_color(RBTNode<T>::RED);
-                N -> set_color(RBTNode<T>::BLACK);
+                P = rotate(P, 1-p_n_dir);
 
                 //
             }
             // cases 3a (LL) 3b (RR)
             
-            rotate(G, 1-g_p_dir); 
+            G->set_color(RBTNode<T>::RED);
+            P -> set_color(RBTNode<T>::BLACK);
+            rotate(G, 1-g_p_dir);
             
             //
             return;
