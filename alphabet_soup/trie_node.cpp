@@ -18,7 +18,9 @@
 TrieNode::TrieNode (bool is_key_state)
 {
     //TODO
-
+    is_key_ = is_key_state;
+    map_ = std::map<char, TrieNode::Ref>();
+    current_ = map_.end();
     //
     assert(is_key()==is_key_state);
     assert(!current_exists());
@@ -36,7 +38,7 @@ bool TrieNode::is_key() const
 {
     bool ret_val = true;
     //TODO
-
+    ret_val = is_key_;
     //
     return ret_val;
 }
@@ -46,7 +48,7 @@ TrieNode::has(char k) const
 {
     bool ret_v = false;
     //TODO
-
+    ret_v = map_.count(k);
     //
     return ret_v;
 }
@@ -57,7 +59,7 @@ TrieNode::child(char k) const
     assert(has(k));
     TrieNode::Ref node = nullptr;
     //TODO
-
+    node = map_.at(k);
     //
     return node;
 }
@@ -67,6 +69,7 @@ TrieNode::current_exists() const
 {
     bool ret_val = true;
     //TODO
+    ret_val = (current_ != map_.end());
 
     //
     return ret_val;
@@ -78,6 +81,7 @@ TrieNode::current_node() const
     assert(current_exists());
     TrieNode::Ref node = nullptr;
     //TODO
+    node = current_->second;
 
     //
     return node;
@@ -89,7 +93,7 @@ TrieNode::current_symbol() const
     assert(current_exists());
     char symbol = 0;
     //TODO
-
+    symbol = current_->first;
     //
     return symbol;
 }
@@ -98,7 +102,7 @@ void
 TrieNode::set_is_key_state(bool new_state)
 {
     //TODO
-
+    is_key_ = new_state;
     //
     assert(is_key()==new_state);
 }
@@ -108,6 +112,9 @@ TrieNode::find_child(char s)
 {
     bool found = false;
     //TODO
+    current_ = map_.find(s);
+
+    found = current_exists();
 
     //
     assert(found || !current_exists());
@@ -119,7 +126,7 @@ void
 TrieNode::goto_first_child()
 {
     //TODO
-
+    current_ = map_.begin();
     //
 }
 
@@ -128,7 +135,7 @@ TrieNode::goto_next_child()
 {
     assert(current_exists());
     //TODO
-
+    current_++;
     //
 }
 
@@ -137,7 +144,8 @@ TrieNode::set_child(char k, Ref node)
 {
     assert(node != nullptr);
     //TODO
-
+    map_.insert(std::pair<char, TrieNode::Ref>(k, node));
+    find_child(k);
     //
     assert(current_symbol()==k);
     assert(current_node()==node);
@@ -150,6 +158,18 @@ TrieNode::fold(std::ostream& out) const
     //Hint: review c++ input/output manipulators at
     //      https://en.cppreference.com/w/cpp/io/manip
 
+
+    out << "[ ";
+    out << (is_key_? "T": "F");
+
+    auto aux = map_.begin();
+    while (aux != map_.end())
+    {
+        out << " "<< std::hex << (uint16_t)aux->first << " ";
+        aux->second->fold(out);
+        aux++;
+    }
+    out << " ]";
     //
     return out;
 }
@@ -158,6 +178,42 @@ TrieNode::Ref TrieNode::create(std::istream& in) noexcept(false)
 {
     TrieNode::Ref node = nullptr;
     //TODO
+    std::string aux;
+    in >> aux;
+
+    if (aux != "[")
+    {
+        throw std::runtime_error("wrong input format.");
+    }
+    in >> aux;
+    if (aux != "]")
+    {
+        if (aux != "T" and aux != "F")
+        {
+            throw std::runtime_error("wrong input format.");
+        }
+
+        node = create(aux == "T");
+
+        in >> aux;
+
+        while (aux != "]")
+        {
+
+            auto aux2 = stoi(aux, nullptr, 16);
+            char valor = (char)aux2;
+
+            node->set_child(valor, create(in));
+
+            in >> aux;
+
+        }
+    }
+    else
+    {
+        throw std::runtime_error("wrong input format.");
+    }
+
 
     //
     return node;
