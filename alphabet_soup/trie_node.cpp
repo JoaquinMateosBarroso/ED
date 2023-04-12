@@ -17,7 +17,7 @@
 
 TrieNode::TrieNode (bool is_key_state)
 {
-    //TODO
+    //
     is_key_ = is_key_state;
     map_ = std::map<char, TrieNode::Ref>();
     current_ = map_.end();
@@ -37,7 +37,7 @@ TrieNode::~TrieNode()
 bool TrieNode::is_key() const
 {
     bool ret_val = true;
-    //TODO
+    //
     ret_val = is_key_;
     //
     return ret_val;
@@ -47,7 +47,7 @@ bool
 TrieNode::has(char k) const
 {
     bool ret_v = false;
-    //TODO
+    //
     ret_v = map_.count(k);
     //
     return ret_v;
@@ -58,7 +58,7 @@ TrieNode::child(char k) const
 {
     assert(has(k));
     TrieNode::Ref node = nullptr;
-    //TODO
+    //
     node = map_.at(k);
     //
     return node;
@@ -68,7 +68,7 @@ bool
 TrieNode::current_exists() const
 {
     bool ret_val = true;
-    //TODO
+    //
     ret_val = (current_ != map_.end());
 
     //
@@ -80,7 +80,7 @@ TrieNode::current_node() const
 {
     assert(current_exists());
     TrieNode::Ref node = nullptr;
-    //TODO
+    //
     node = current_->second;
 
     //
@@ -92,7 +92,7 @@ TrieNode::current_symbol() const
 {
     assert(current_exists());
     char symbol = 0;
-    //TODO
+    //
     symbol = current_->first;
     //
     return symbol;
@@ -101,7 +101,7 @@ TrieNode::current_symbol() const
 void
 TrieNode::set_is_key_state(bool new_state)
 {
-    //TODO
+    //
     is_key_ = new_state;
     //
     assert(is_key()==new_state);
@@ -111,7 +111,7 @@ bool
 TrieNode::find_child(char s)
 {
     bool found = false;
-    //TODO
+    //
     current_ = map_.find(s);
 
     found = current_exists();
@@ -125,7 +125,7 @@ TrieNode::find_child(char s)
 void
 TrieNode::goto_first_child()
 {
-    //TODO
+    //
     current_ = map_.begin();
     //
 }
@@ -134,7 +134,7 @@ void
 TrieNode::goto_next_child()
 {
     assert(current_exists());
-    //TODO
+    //
     current_++;
     //
 }
@@ -143,7 +143,7 @@ void
 TrieNode::set_child(char k, Ref node)
 {
     assert(node != nullptr);
-    //TODO
+    //
     map_.insert(std::pair<char, TrieNode::Ref>(k, node));
     find_child(k);
     //
@@ -154,7 +154,7 @@ TrieNode::set_child(char k, Ref node)
 std::ostream&
 TrieNode::fold(std::ostream& out) const
 {
-    //TODO
+    //
     //Hint: review c++ input/output manipulators at
     //      https://en.cppreference.com/w/cpp/io/manip
 
@@ -177,7 +177,7 @@ TrieNode::fold(std::ostream& out) const
 TrieNode::Ref TrieNode::create(std::istream& in) noexcept(false)
 {
     TrieNode::Ref node = nullptr;
-    //TODO
+    //
     std::string aux;
     in >> aux;
 

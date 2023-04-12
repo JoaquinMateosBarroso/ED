@@ -4,6 +4,7 @@
         "bit": "cpp",
         "*.tcc": "cpp",
         "random": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "iosfwd": "cpp"
     }
 }
