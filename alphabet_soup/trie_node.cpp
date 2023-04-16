@@ -196,24 +196,21 @@ TrieNode::Ref TrieNode::create(std::istream& in) noexcept(false)
         node = create(aux == "T");
 
         in >> aux;
-
         while (aux != "]")
         {
 
             auto aux2 = stoi(aux, nullptr, 16);
             char valor = (char)aux2;
-
             node->set_child(valor, create(in));
-
+            
             in >> aux;
-
+            
         }
     }
     else
     {
         throw std::runtime_error("wrong input format.");
     }
-
 
     //
     return node;

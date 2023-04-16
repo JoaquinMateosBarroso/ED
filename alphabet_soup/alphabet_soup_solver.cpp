@@ -46,6 +46,73 @@ scan_cell(int row, int col, int dy, int dx, AlphabetSoup const& soup,
     //    (row,col) into the second item of scan_result (the stack of
     //    coordinates).
 
+    
+
+    if (trie->is_key())
+    {
+        scan_result.first = trie->prefix();
+        return;
+    }
+
+    if (trie->find_symbol(soup.cell(row, col)))
+    {
+        
+        if (dx == 0 and dy == 0)
+        {
+            
+            int current_row = row - 1;
+            int current_col = col - 1;
+
+            if ((current_row >= 0) and (current_col >=0))
+                scan_cell(current_row, current_col, -1, -1, soup, trie->current(), scan_result);
+            current_col++;
+            if ((current_row >= 0) and scan_result.first == "")
+                scan_cell(current_row, current_col, -1, 0, soup, trie->current(), scan_result);
+            current_col++;
+            if ((current_row >= 0) and (current_col < soup.cols()) and scan_result.first == "")
+                scan_cell(current_row, current_col, -1, 1, soup, trie->current(), scan_result);
+            
+
+            current_row++;
+            if ((current_col < soup.cols()) and scan_result.first == "")
+                scan_cell(current_row, current_col, 0, 1, soup, trie->current(), scan_result);
+            current_row++;
+            if ((current_col < soup.cols()) and (current_row < soup.rows()) and scan_result.first == "")
+                scan_cell(current_row, current_col, 1, 1, soup, trie->current(), scan_result);
+
+
+            current_col--;
+            if ((current_row < soup.rows()) and scan_result.first == "")
+            {
+
+                scan_cell(current_row, current_col, 1, 0, soup, trie->current(), scan_result);
+            }
+            current_col--;
+            if ((current_row < soup.rows()) and (current_col >= 0) and scan_result.first == "")
+                scan_cell(current_row, current_col, 1, -1, soup, trie->current(), scan_result);
+
+
+            current_row--;
+            if ((current_col >= 0) and scan_result.first == "")
+                scan_cell(current_row, current_col, 0, -1, soup, trie->current(), scan_result);
+        }
+
+        else
+        {
+
+            
+            int current_row = row + dy;
+            int current_col = col + dx;
+            if (((current_row >= 0) and (current_row < soup.rows()) and (current_col >= 0) and (current_col < soup.cols())) or trie->current()->is_key())
+                scan_cell(current_row, current_col, dy, dx, soup, trie->current(), scan_result);
+            
+        }
+
+        if (scan_result.first != "")
+        {
+            scan_result.second.push(std::pair<int, int>(row, col));
+        }
+    }
 
 
     //
