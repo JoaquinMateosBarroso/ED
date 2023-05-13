@@ -1,0 +1,77 @@
+{
+    "configurations": [
+        {
+            "name": "test_dos_detector",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/tmp/build-dos_detector-open_addressing-Debug/test_dos_detector",
+            "args": ["tests_dos_detector/00",],
+            "stopAtEntry": false,
+            "cwd": "${fileWorkspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        
+        {
+            "name": "test_hash_table",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/tmp/build-dos_detector-open_addressing-Debug/test_hash_table",
+            "args": ["tests_hash_table/01",],
+            "stopAtEntry": false,
+            "cwd": "${fileWorkspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+    {
+        "name": "test_hash_f",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "/tmp/build-dos_detector-open_addressing-Debug/test_hash_f",
+        "args": ["tests_hash_function_dh/00",],
+        "stopAtEntry": false,
+        "cwd": "${fileWorkspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            },
+            {
+                "description": "Set Disassembly Flavor to Intel",
+                "text": "-gdb-set disassembly-flavor intel",
+                "ignoreFailures": true
+            }
+        ]
+    }
+    ]
+}
