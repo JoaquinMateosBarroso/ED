@@ -222,7 +222,7 @@ bool WGraph<T>::has(NodeRef u) const
     assert (u != nullptr);
     bool ret_v = true;
     //
-    ret_v = (u->label() < capacity() and node(u->label(u)) == u);
+    ret_v = u->label() < capacity() and (node(u->label()) == u);
     //
     assert(!ret_v || (u->label()<capacity() && node(u->label())==u));
     return ret_v;
@@ -413,7 +413,10 @@ void WGraph<T>::goto_first_edge()
     //
     // Remember: we consider here edges with weight < infinite.
     current_edge_ = -1;
-    goto_next_edge();
+    do
+    {
+        current_edge_++;
+    } while(!has_current_edge() and current_edge_ < size());
 
     //
     assert(!has_current_edge()||current_edge()->first() == current_node());
@@ -428,7 +431,8 @@ void WGraph<T>::goto_next_node()
     //
     // Remember: you must update the edge cursor too.
     current_node_++;
-    goto_first_edge();
+    if (has_current_node())
+        goto_first_edge();
     //
     assert(has_current_node() || !has_current_edge());
     assert(!has_current_edge() || (current_edge()->first() == current_node()));
@@ -552,7 +556,10 @@ void WGraph<T>::set_current_weight(float new_w)
     // Remember: set infinite as new weight invalidates edge_cursor.
     matrix_->set(current_node_, current_edge_, new_w);
     current_edge_--;
-    goto_next_edge();
+    do
+    {
+        current_edge_++;
+    } while(!has_current_edge() and current_edge_ < size());
     //
     assert(new_w < std::numeric_limits<float>::infinity() || !has_current_edge());
 }
@@ -620,7 +627,7 @@ WGraph<T>::fold(std::ostream& out) const
 template <class T>
 WGraph<T>::WGraph (std::istream& input) noexcept(false)
 {
-    //TODO
+    //
     //Remember: capacity is the max number of nodes that the graph could have.
     //          size is the current number of nodes (size <= capacity).
     //Hint: The Matrix template has a unfold method.
@@ -642,6 +649,9 @@ WGraph<T>::WGraph (std::istream& input) noexcept(false)
     matrix_ = FMatrix::create(input);
 
     input >> text;
+
+    current_edge_ = size();
+    current_node_ = size();
 
     //
     assert(!has_current_node());
