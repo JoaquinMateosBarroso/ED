@@ -33,7 +33,47 @@ void dijkstra_algorithm(typename WGraph<T>::Ref g,
     //      the tuples will be sorted properly.
     //      @see: https://en.cppreference.com/w/cpp/utility/tuple
     // Hint: you can use the keyword "using" to create an alias "Tuple"
- 
+    for (size_t i = 0; i < g->size(); i++)
+    {
+        distances.push_back(std::numeric_limits<float>::infinity());
+        predecessors.push_back(i);
+    }
+    std::list<std::tuple<size_t, size_t, float>> pendientes;
+
+    typename WNode<T>::Ref nodo_actual = g->current_node();
+
+    pendientes.push_back(std::tuple<size_t, size_t, float>(g->current_node()->label(), g->current_node()->label(), 0.0));
+
+    while (!pendientes.empty())
+    {
+        auto t = pendientes.front();
+        pendientes.pop_front();
+        auto u = std::get<0>(t);
+        if (!g->node(u)->is_visited())
+        {
+            predecessors[u] = std::get<1>(t);
+            distances[u] = std::get<2>(t);
+            g->node(u)->set_visited(true);
+            g->goto_node(g->node(u));
+            while (g->has_current_edge())
+            {
+                auto v = g->current_edge()->other(g->node(u))->label();
+                if (!g->node(v)->is_visited())
+                {
+                    auto i = pendientes.end();
+                    for (; i != pendientes.begin() and std::get<2>(*i) > (distances[u] + g->current_weight()); i--){}
+                    
+                    pendientes.insert(i, std::tuple<size_t, size_t, float> (v, u, distances[u] + g->current_weight()));
+
+                    // pendientes.push_back( std::tuple<size_t, size_t, float> (v, u, distances[u] + g->current_weight()));
+                }
+                g->goto_next_edge();
+            }
+        }
+
+    }
+    
+
     //
 }
 
