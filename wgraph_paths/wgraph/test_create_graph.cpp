@@ -45,7 +45,7 @@ main(int argc, const char* argv[])
             std::cerr << "Error: could not read the type of the vertex's item." << std::endl;
             return EXIT_FAILURE;
         }
-         if (type == "INTEGER")
+        if (type == "INTEGER")
         {
             WGraph<Int>::Ref g = create_wgraph<Int>(input_file);
             if (!g)
